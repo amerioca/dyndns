@@ -75,7 +75,7 @@ func run() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%v \t%v\n", ownIP, domainIP)
+	fmt.Printf("%v -> %v\n", domainIP, ownIP)
 	if domainIP != ownIP {
 		if err := putNewIP(ownIP); err != nil {
 			log.Fatal(err)
