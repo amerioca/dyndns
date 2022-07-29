@@ -141,9 +141,9 @@ func Dns(v ...string) {
 		log.Fatalf("You need to provide your API key")
 	}
 
-	time.Sleep(time.Second * time.Duration(POLLING))
 	// run
 	for {
 		run()
+		time.Sleep(time.Second * time.Duration(POLLING))
 	}
 }
