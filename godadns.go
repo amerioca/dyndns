@@ -84,15 +84,16 @@ func run() {
 }
 
 // globals
-var GODADDY_KEY = ""
-var GODADDY_SECRET = ""
-var DOMAIN = ""
-var SUBDOMAIN = ""
+var GODADDY_KEY = os.Getenv("GODADDY_KEY")
+var GODADDY_SECRET = os.Getenv("GODADDY_SECRET")
+var DOMAIN = os.Getenv("GODADDY_DOMAIN")
+var SUBDOMAIN = os.Getenv("GODADDY_SUBDOMAIN")
 var POLLING int64 = 360
 
 func Dns(v ...string) {
 	logFile := flag.String("log", "", "Path for log file (will be created if it doesn't exist)")
 	if len(v) != 0 {
+		fmt.Println(v)
 		GODADDY_KEY = v[0]
 		GODADDY_SECRET = v[1]
 		DOMAIN = v[2]
@@ -102,12 +103,12 @@ func Dns(v ...string) {
 		if err != nil {
 			log.Fatal("Error loading .env file")
 		}
-		// // required flags
+		// required flags
 		keyPtr := flag.String("key", os.Getenv("GODADDY_KEY"), "Godaddy API key")
 		secretPtr := flag.String("secret", os.Getenv("GODADDY_SECRET"), "Godaddy API secret")
 		pollingPtr := flag.Int64("interval", 360, "Polling interval in seconds. Lookup Godaddy's current rate limits before setting too low. Defaults to 360. (Optional)")
 		domainPtr := flag.String("domain", os.Getenv("GODADDY_DOMAIN"), "Your top level domain (e.g., example.com) registered with Godaddy and on the same account as your API key")
-		// // optional flags
+		// optional flags
 		subdomainPtr := flag.String("subdomain", os.Getenv("GODADDY_SUBDOMAIN"), "The data value (aka host) for the A record. It can be a 'subdomain' (e.g., 'subdomain' where 'subdomain.example.com' is the qualified domain name). Note that such an A record must be set up first in your Godaddy account beforehand. Defaults to @. (Optional)")
 		flag.Parse()
 		// fmt.Printf("%v %v\n", *domainPtr, domainPtr)
@@ -144,6 +145,7 @@ func Dns(v ...string) {
 	// run
 	for {
 		run()
+		fmt.Println("POLLING DNS")
 		time.Sleep(time.Second * time.Duration(POLLING))
 	}
 }
