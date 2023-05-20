@@ -69,16 +69,19 @@ func putNewIP(ip string) error {
 func run() {
 	ownIP, err := getOwnIPv4()
 	if err != nil {
-		log.Fatal(err)
+		// log.Fatal(err)
+		fmt.Printf("run() ERR getOwnIPv4() %v\n", err)
 	}
 	domainIP, err := getDomainIPv4()
 	if err != nil {
-		log.Fatal(err)
+		// log.Fatal(err)
+		fmt.Printf("run() ERR getDomainIPv4() %v\n", err)
 	}
 	fmt.Printf("%v -> %v\n", domainIP, ownIP)
 	if domainIP != ownIP {
 		if err := putNewIP(ownIP); err != nil {
-			log.Fatal(err)
+			// log.Fatal(err)
+			fmt.Printf("run() ERR putNewIP() %v\n", err)
 		}
 	}
 }
