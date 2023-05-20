@@ -20,6 +20,7 @@ var IP_PROVIDER = "https://v4.ident.me/"
 func getOwnIPv4() (string, error) {
 	resp, err := http.Get(IP_PROVIDER)
 	if err != nil {
+		fmt.Printf("getOwnIPv4 ERR")
 		return "", err
 	}
 	buf := new(bytes.Buffer)
@@ -96,7 +97,7 @@ var POLLING int64 = 360
 func Dns(v ...string) {
 	logFile := flag.String("log", "", "Path for log file (will be created if it doesn't exist)")
 	if len(v) != 0 {
-		fmt.Println(v)
+		fmt.Printf("v = %v\n", v)
 		GODADDY_KEY = v[0]
 		GODADDY_SECRET = v[1]
 		DOMAIN = v[2]
@@ -148,7 +149,7 @@ func Dns(v ...string) {
 	// run
 	for {
 		run()
-		fmt.Println("POLLING DNS")
+		fmt.Println("POLLING DNS v0.1.3")
 		time.Sleep(time.Second * time.Duration(POLLING))
 	}
 }
