@@ -28,8 +28,30 @@ func getOwnIPv4() (string, error) {
 	return buf.String(), nil
 }
 
+func getLocalIPv4() (string, error) {
+	return os.Getenv("LOCAL_IP"), nil
+}
+
 func getDomainIPv4() (string, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.godaddy.com/v1/domains/%s/records/A/%s", DOMAIN, SUBDOMAIN), nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("sso-key %s:%s", GODADDY_KEY, GODADDY_SECRET))
+	c := new(http.Client)
+	resp, err := c.Do(req)
+	if err != nil {
+		return "", err
+	}
+	in := make([]struct {
+		Data string `json:"data"`
+	}, 1)
+	json.NewDecoder(resp.Body).Decode(&in)
+	return in[0].Data, nil
+}
+
+func getLocalDomainIPv4() (string, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.godaddy.com/v1/domains/%s/records/A/%s", DOMAIN, SUBDOMAIN_LOCAL), nil)
 	if err != nil {
 		return "", err
 	}
@@ -63,6 +85,10 @@ func putNewIP(ip string) error {
 	if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, SUBDOMAIN, newrecord); err != nil {
 		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
 	}
+
+	if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, SUBDOMAIN_LOCAL, newrecord); err != nil {
+		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
+	}
 	// fmt.Printf("%v.%v %v %v\n", SUBDOMAIN, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
 	return nil
 }
@@ -73,6 +99,7 @@ func run() {
 		// log.Fatal(err)
 		fmt.Printf("run() ERR getOwnIPv4() %v\n", err)
 	}
+
 	domainIP, err := getDomainIPv4()
 	if err != nil {
 		// log.Fatal(err)
@@ -85,6 +112,20 @@ func run() {
 			fmt.Printf("run() ERR putNewIP() %v\n", err)
 		}
 	}
+
+	localIP, err := getLocalIPv4()
+	localdomainIP, err := getLocalDomainIPv4()
+	if err != nil {
+		// log.Fatal(err)
+		fmt.Printf("run() ERR getLocalDomainIPv4() %v\n", err)
+	}
+	fmt.Printf("%v -> %v\n", localdomainIP, localIP)
+	if localdomainIP != localIP {
+		if err := putNewIP(localIP); err != nil {
+			// log.Fatal(err)
+			fmt.Printf("run() ERR putNewLocalIP() %v\n", err)
+		}
+	}
 }
 
 // globals
@@ -92,6 +133,7 @@ var GODADDY_KEY = os.Getenv("GODADDY_KEY")
 var GODADDY_SECRET = os.Getenv("GODADDY_SECRET")
 var DOMAIN = os.Getenv("GODADDY_DOMAIN")
 var SUBDOMAIN = os.Getenv("GODADDY_SUBDOMAIN")
+var SUBDOMAIN_LOCAL = os.Getenv("GODADDY_SUBDOMAIN_LOCAL")
 var POLLING int64 = 360
 
 func Dns(v ...string) {
@@ -102,6 +144,7 @@ func Dns(v ...string) {
 		GODADDY_SECRET = v[1]
 		DOMAIN = v[2]
 		SUBDOMAIN = v[3]
+		SUBDOMAIN_LOCAL = v[4]
 	} else {
 		err := godotenv.Load()
 		if err != nil {
@@ -114,9 +157,11 @@ func Dns(v ...string) {
 		domainPtr := flag.String("domain", os.Getenv("GODADDY_DOMAIN"), "Your top level domain (e.g., example.com) registered with Godaddy and on the same account as your API key")
 		// optional flags
 		subdomainPtr := flag.String("subdomain", os.Getenv("GODADDY_SUBDOMAIN"), "The data value (aka host) for the A record. It can be a 'subdomain' (e.g., 'subdomain' where 'subdomain.example.com' is the qualified domain name). Note that such an A record must be set up first in your Godaddy account beforehand. Defaults to @. (Optional)")
+		subdomainlocalPtr := flag.String("subdomain", os.Getenv("GODADDY_SUBDOMAIN_LOCAL"), "The data value (aka host) for the A record. It can be a 'subdomain' (e.g., 'subdomain' where 'subdomain.example.com' is the qualified domain name). Note that such an A record must be set up first in your Godaddy account beforehand. Defaults to @. (Optional)")
 		flag.Parse()
 		// fmt.Printf("%v %v\n", *domainPtr, domainPtr)
 		SUBDOMAIN = *subdomainPtr
+		SUBDOMAIN_LOCAL = *subdomainlocalPtr
 		DOMAIN = *domainPtr
 		GODADDY_SECRET = *secretPtr
 		GODADDY_KEY = *keyPtr
@@ -149,7 +194,7 @@ func Dns(v ...string) {
 	// run
 	for {
 		run()
-		fmt.Println("POLLING DNS v0.1.3")
+		fmt.Println("POLLING DNS v0.1.4")
 		time.Sleep(time.Second * time.Duration(POLLING))
 	}
 }
