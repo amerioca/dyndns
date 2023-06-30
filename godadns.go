@@ -157,7 +157,7 @@ func Dns(v ...string) {
 		domainPtr := flag.String("domain", os.Getenv("GODADDY_DOMAIN"), "Your top level domain (e.g., example.com) registered with Godaddy and on the same account as your API key")
 		// optional flags
 		subdomainPtr := flag.String("subdomain", os.Getenv("GODADDY_SUBDOMAIN"), "The data value (aka host) for the A record. It can be a 'subdomain' (e.g., 'subdomain' where 'subdomain.example.com' is the qualified domain name). Note that such an A record must be set up first in your Godaddy account beforehand. Defaults to @. (Optional)")
-		subdomainlocalPtr := flag.String("subdomain", os.Getenv("GODADDY_SUBDOMAIN_LOCAL"), "The data value (aka host) for the A record. It can be a 'subdomain' (e.g., 'subdomain' where 'subdomain.example.com' is the qualified domain name). Note that such an A record must be set up first in your Godaddy account beforehand. Defaults to @. (Optional)")
+		subdomainlocalPtr := flag.String("subdomain_local", os.Getenv("GODADDY_SUBDOMAIN_LOCAL"), "The data value (aka host) for the A record. It can be a 'subdomain' (e.g., 'subdomain' where 'subdomain.example.com' is the qualified domain name). Note that such an A record must be set up first in your Godaddy account beforehand. Defaults to @. (Optional)")
 		flag.Parse()
 		// fmt.Printf("%v %v\n", *domainPtr, domainPtr)
 		SUBDOMAIN = *subdomainPtr
