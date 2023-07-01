@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -26,6 +27,18 @@ func getOwnIPv4() (string, error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(resp.Body)
 	return buf.String(), nil
+}
+
+func getOutboundIPv4() (string, error) {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	return fmt.Sprintln(localAddr.IP.String()), nil
+	// return localAddr.IP, nil
 }
 
 func getLocalIPv4() (string, error) {
@@ -86,7 +99,7 @@ func putNewIP(ip string, subdomain string) error {
 		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
 	}
 
-	// fmt.Printf("%v.%v %v %v\n", subdomain, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
+	fmt.Printf("%v.%v %v %v\n", subdomain, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
 	return nil
 }
 
@@ -110,13 +123,19 @@ func run() {
 		}
 	}
 
-	localIP, err := getLocalIPv4()
+	fmt.Printf("%v \n", os.Getenv("SUBDOMAIN_LOCAL"))
+	if os.Getenv("SUBDOMAIN_LOCAL") == "" {
+		fmt.Printf("run() ERR SUBDOMAIN_LOCAL not set\n")
+		return
+	}
+	localIP, err := getOutboundIPv4()
 	localdomainIP, err := getLocalDomainIPv4()
 	if err != nil {
 		// log.Fatal(err)
 		fmt.Printf("run() ERR getLocalDomainIPv4() %v\n", err)
 	}
 	fmt.Printf("%v -> %v\n", localdomainIP, localIP)
+
 	if localdomainIP != localIP {
 		if err := putNewIP(localIP, SUBDOMAIN_LOCAL); err != nil {
 			// log.Fatal(err)
