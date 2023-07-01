@@ -94,7 +94,7 @@ func putNewIP(ip string, subdomain string) error {
 	newrecord := godaddygo.Record{
 		Data: ip,
 	}
-
+	fmt.Printf("Sending=>%v\n", subdomain)
 	if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, subdomain, newrecord); err != nil {
 		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
 	}
@@ -124,22 +124,23 @@ func run() {
 	}
 
 	fmt.Printf("'%v' \n", SUBDOMAIN_LOCAL)
-	if SUBDOMAIN_LOCAL == "" {
-		fmt.Printf("run() ERR SUBDOMAIN_LOCAL not set\n")
+	if SUBDOMAIN_LOCAL != "" {
+		// fmt.Printf("run() ERR SUBDOMAIN_LOCAL not set\n")
 		// return
-	}
-	localIP, err := getOutboundIPv4()
-	localdomainIP, err := getLocalDomainIPv4()
-	if err != nil {
-		// log.Fatal(err)
-		fmt.Printf("run() ERR getLocalDomainIPv4() %v\n", err)
-	}
-	fmt.Printf("%v -> %v\n", localdomainIP, localIP)
 
-	if localdomainIP != localIP {
-		if err := putNewIP(localIP, SUBDOMAIN_LOCAL); err != nil {
+		localIP, err := getOutboundIPv4()
+		localdomainIP, err := getLocalDomainIPv4()
+		if err != nil {
 			// log.Fatal(err)
-			fmt.Printf("run() ERR putNewLocalIP() %v\n", err)
+			fmt.Printf("run() ERR getLocalDomainIPv4() %v\n", err)
+		}
+		fmt.Printf("%v -> %v\n", localdomainIP, localIP)
+
+		if localdomainIP != localIP {
+			if err := putNewIP(localIP, SUBDOMAIN_LOCAL); err != nil {
+				// log.Fatal(err)
+				fmt.Printf("run() ERR putNewLocalIP() %v\n", err)
+			}
 		}
 	}
 }
