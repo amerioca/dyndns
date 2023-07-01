@@ -68,7 +68,7 @@ func getLocalDomainIPv4() (string, error) {
 	return in[0].Data, nil
 }
 
-func putNewIP(ip string) error {
+func putNewIP(ip string, subdomain string) error {
 	// Connect to production Gateway
 	api, _ := godaddygo.NewProduction(GODADDY_KEY, GODADDY_SECRET)
 	// Target version 1 of the production GoDaddy Gateway
@@ -82,14 +82,18 @@ func putNewIP(ip string) error {
 		Data: ip,
 	}
 
-	if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, SUBDOMAIN, newrecord); err != nil {
+	if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, subdomain, newrecord); err != nil {
 		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
 	}
 
-	if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, SUBDOMAIN_LOCAL, newrecord); err != nil {
-		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
-	}
-	// fmt.Printf("%v.%v %v %v\n", SUBDOMAIN, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
+	// if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, SUBDOMAIN, newrecord); err != nil {
+	// 	return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
+	// }
+
+	// if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, SUBDOMAIN_LOCAL, newrecord); err != nil {
+	// 	return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
+	// }
+	fmt.Printf("%v.%v %v %v\n", subdomain, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
 	return nil
 }
 
@@ -107,7 +111,7 @@ func run() {
 	}
 	fmt.Printf("%v -> %v\n", domainIP, ownIP)
 	if domainIP != ownIP {
-		if err := putNewIP(ownIP); err != nil {
+		if err := putNewIP(ownIP, SUBDOMAIN); err != nil {
 			// log.Fatal(err)
 			fmt.Printf("run() ERR putNewIP() %v\n", err)
 		}
@@ -121,7 +125,7 @@ func run() {
 	}
 	fmt.Printf("%v -> %v\n", localdomainIP, localIP)
 	if localdomainIP != localIP {
-		if err := putNewIP(localIP); err != nil {
+		if err := putNewIP(localIP, SUBDOMAIN_LOCAL); err != nil {
 			// log.Fatal(err)
 			fmt.Printf("run() ERR putNewLocalIP() %v\n", err)
 		}
@@ -194,7 +198,7 @@ func Dns(v ...string) {
 	// run
 	for {
 		run()
-		fmt.Println("POLLING DNS v0.1.4")
+		fmt.Println("POLLING DNS v0.1.8")
 		time.Sleep(time.Second * time.Duration(POLLING))
 	}
 }
