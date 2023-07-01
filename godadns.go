@@ -163,7 +163,7 @@ func Dns(v ...string) {
 		SUBDOMAIN = *subdomainPtr
 		SUBDOMAIN_LOCAL = *subdomainlocalPtr
 		DOMAIN = *domainPtr
-		GODADDY_SECRET = *secretPtrx
+		GODADDY_SECRET = *secretPtr
 		GODADDY_KEY = *keyPtr
 		POLLING = *pollingPtr
 	}
