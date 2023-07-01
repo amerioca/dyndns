@@ -94,12 +94,10 @@ func putNewIP(ip string, subdomain string) error {
 	newrecord := godaddygo.Record{
 		Data: ip,
 	}
-	fmt.Printf("Sending=>%v - %v\n", subdomain, newrecord)
 	if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, subdomain, newrecord); err != nil {
 		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
 	}
-
-	fmt.Printf("%v.%v %v %v\n", subdomain, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
+	// fmt.Printf("%v.%v %v %v\n", subdomain, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
 	return nil
 }
 
@@ -123,11 +121,7 @@ func run() {
 		}
 	}
 
-	fmt.Printf("'%v' \n", SUBDOMAIN_LOCAL)
 	if SUBDOMAIN_LOCAL != "" {
-		// fmt.Printf("run() ERR SUBDOMAIN_LOCAL not set\n")
-		// return
-
 		localIP, err := getOutboundIPv4()
 		localdomainIP, err := getLocalDomainIPv4()
 		if err != nil {
@@ -211,7 +205,7 @@ func Dns(v ...string) {
 	// run
 	for {
 		run()
-		fmt.Println("POLLING DNS v0.1.8")
+		fmt.Println("POLLING DNS v0.1.14")
 		time.Sleep(time.Second * time.Duration(POLLING))
 	}
 }
