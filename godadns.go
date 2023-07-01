@@ -123,8 +123,8 @@ func run() {
 		}
 	}
 
-	fmt.Printf("%v \n", os.Getenv("SUBDOMAIN_LOCAL"))
-	if os.Getenv("SUBDOMAIN_LOCAL") == "" {
+	fmt.Printf("'%v' \n", os.Getenv("GODADDY_SUBDOMAIN_LOCAL"))
+	if os.Getenv("GODADDY_SUBDOMAIN_LOCAL") == "" {
 		fmt.Printf("run() ERR SUBDOMAIN_LOCAL not set\n")
 		return
 	}
