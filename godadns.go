@@ -86,14 +86,7 @@ func putNewIP(ip string, subdomain string) error {
 		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
 	}
 
-	// if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, SUBDOMAIN, newrecord); err != nil {
-	// 	return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
-	// }
-
-	// if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, SUBDOMAIN_LOCAL, newrecord); err != nil {
-	// 	return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
-	// }
-	fmt.Printf("%v.%v %v %v\n", subdomain, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
+	// fmt.Printf("%v.%v %v %v\n", subdomain, DOMAIN, GODADDY_KEY, GODADDY_SECRET)
 	return nil
 }
 
