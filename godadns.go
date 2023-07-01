@@ -123,10 +123,10 @@ func run() {
 		}
 	}
 
-	fmt.Printf("'%v' \n", os.Getenv("GODADDY_SUBDOMAIN_LOCAL"))
-	if os.Getenv("GODADDY_SUBDOMAIN_LOCAL") == "" {
+	fmt.Printf("'%v' \n", SUBDOMAIN_LOCAL)
+	if SUBDOMAIN_LOCAL == "" {
 		fmt.Printf("run() ERR SUBDOMAIN_LOCAL not set\n")
-		return
+		// return
 	}
 	localIP, err := getOutboundIPv4()
 	localdomainIP, err := getLocalDomainIPv4()
