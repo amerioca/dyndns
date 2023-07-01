@@ -37,7 +37,7 @@ func getOutboundIPv4() (string, error) {
 	defer conn.Close()
 
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	return fmt.Sprintln(localAddr.IP.String()), nil
+	return fmt.Sprint(localAddr.IP.String()), nil
 	// return localAddr.IP, nil
 }
 
@@ -94,7 +94,7 @@ func putNewIP(ip string, subdomain string) error {
 	newrecord := godaddygo.Record{
 		Data: ip,
 	}
-	fmt.Printf("Sending=>%v\n", subdomain)
+	fmt.Printf("Sending=>%v - %v\n", subdomain, newrecord)
 	if err := recs.ReplaceByTypeAndName(context.Background(), godaddygo.RecordTypeA, subdomain, newrecord); err != nil {
 		return fmt.Errorf("error in TestRecordReplaceByTypeAndName : %s", err)
 	}
